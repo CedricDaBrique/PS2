@@ -69,6 +69,8 @@ class Tableau1 extends Phaser.Scene {
         // this.physics.add.collider(this.platfer, platforms);
 
 
+        this.cameras.main.startFollow(this.player);
+
 
         this.initKeyboard();
     }
