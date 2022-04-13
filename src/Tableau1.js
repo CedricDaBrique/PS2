@@ -2,12 +2,13 @@ class Tableau1 extends Phaser.Scene {
 
 
     preload() {
-        // Je preload les images autres que Tiled!
+
         this.load.image('player','assets/Robot.png');
+        this.load.image("sword", "assets/images/sword.png");
 
         this.load.image('bg','assets/images/background.png');
 
-        // chargement tilemap
+
         this.load.image("tilemap", "assets/tiles_packed.png");
 
         // chargement de la map en json
@@ -15,9 +16,44 @@ class Tableau1 extends Phaser.Scene {
     }
 
 
+    onEvent()
+    {
+        this.sword.disableBody()
+        this.sword.setVisible(false);
+    }
+
     create() {
 
         this.turn = false;
+
+
+
+
+
+        //SWORD
+
+        this.sword = this.physics.add.sprite(150, 200, "sword").setScale(.1);
+        this.sword.body.setAllowGravity(false);
+        this.sword.setDepth(1);
+        this.sword.setVisible(false);
+        this.sword.attack = 100
+        this.sword.disableBody()
+
+        this.input.on('pointerdown', function (pointer) {
+
+            //On rend l'épée visible
+            this.sword.setVisible(true);
+            //On active le body de l'épée
+            this.sword.enableBody()
+            //On ajoute un event avec un delay qui fera disparaitre l'épée pendant 250 ms
+            this.time.addEvent({ delay: 250, callback: this.onEvent, callbackScope: this });
+
+        }, this);
+
+
+
+
+
 
 
         this.bg = this.physics.add.sprite(0, 0, 'bg').setOrigin(0, 0);
@@ -128,7 +164,11 @@ class Tableau1 extends Phaser.Scene {
 
                 case Phaser.Input.Keyboard.KeyCodes.SPACE:
 
-                        me.player.setVelocityY(-350);
+                    if (me.player.body.onFloor()){
+                        me.player.setVelocityY(-650);
+                    }
+
+
 
                     break;
 
@@ -147,8 +187,13 @@ class Tableau1 extends Phaser.Scene {
     }
 
     update(){
-
+        this.sword.x = this.player.x+110;
+        this.sword.y = this.player.y+30;
         this.player.flipX = this.turn === true;
+        this.sword.flipX = this.turn === true;
+        if (this.turn === true){
+            this.sword.X +50;
+        }
 
     }
 

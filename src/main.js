@@ -1,12 +1,14 @@
 let gameConfig = {
     type: Phaser.AUTO,
     width: 800,
-    height: 450,
+    height: 800,
     backgroundColor: '#ffffff',
     parent: 'game',
     physics: {
         default: 'arcade',
         arcade: {
+
+            debug : true,
             gravity: { y: 600},
             fps : 60
         }
