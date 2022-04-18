@@ -6,7 +6,7 @@ class Tableau1 extends Phaser.Scene {
         this.load.image('player','assets/Robot.png');
         this.load.image("sword", "assets/images/sword.png");
 
-        this.load.image('bg','assets/images/background.png');
+
 
 
         this.load.image("tilemap", "assets/tiles_packed.png");
@@ -55,12 +55,6 @@ class Tableau1 extends Phaser.Scene {
 
 
 
-
-        this.bg = this.physics.add.sprite(0, 0, 'bg').setOrigin(0, 0);
-        this.bg.setDisplaySize( 800, 450);
-        this.bg.body.setAllowGravity(false);
-        this.bg.setVisible(true);
-        this.bg.setVelocityY(0);
 
         // chargement de la map
         const map = this.add.tilemap("map");
