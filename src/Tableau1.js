@@ -102,6 +102,10 @@ class Tableau1 extends Phaser.Scene {
         this.cameras.main.startFollow(this.player);
 
 
+
+
+
+
         this.initKeyboard();
     }
 
@@ -188,6 +192,7 @@ class Tableau1 extends Phaser.Scene {
         if (this.turn === true){
             this.sword.X +50;
         }
+
 
     }
 
