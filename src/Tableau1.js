@@ -3,20 +3,22 @@ class Tableau1 extends Phaser.Scene {
 
     preload() {
 
-        this.load.image('player', 'assets/Robot.png');
-        this.load.image("sword", "assets/images/sword.png");
+        //this.load.image('player', 'assets/Robot.png');
+
 
 
         this.load.image("tilemap", "assets/tiles_packed.png");
 
         // chargement de la map en json
         this.load.tilemapTiledJSON("map", "assets/MapBasique.json");
+
+        for(let i=1;i<=5;i++){
+            this.load.image('player'+i, 'assets/idle/idle'+i+'.png');
+        }
     }
 
 
     onEvent() {
-        this.sword.disableBody()
-        this.sword.setVisible(false);
     }
 
     create() {
@@ -37,26 +39,23 @@ class Tableau1 extends Phaser.Scene {
         this.cameras.main.setZoom(this.zoom);
 
 
-        //SWORD
-
-        this.sword = this.physics.add.sprite(150, 200, "sword").setScale(.1);
-        this.sword.body.setAllowGravity(false);
-        this.sword.setDepth(1);
-        this.sword.setVisible(false);
-        this.sword.attack = 100
-        this.sword.disableBody()
 
 
-        this.input.on('pointerdown', function (pointer) {
+        this.speed = {
+            speedDash: 1,
+        }
 
-            //On rend l'épée visible
-            this.sword.setVisible(true);
-            //On active le body de l'épée
-            this.sword.enableBody()
-            //On ajoute un event avec un delay qui fera disparaitre l'épée pendant 250 ms
-            this.time.addEvent({delay: 250, callback: this.onEvent, callbackScope: this});
-
-        }, this);
+        this.dash = this.tweens.add({
+            targets: this.speed,
+            speedDash: 0,
+            // alpha: { start: 0, to: 1 },
+            // alpha: 1,
+            // alpha: '+=1',
+            ease: "Circ.easeInOut", // 'Cubic', 'Elastic', 'Bounce', 'Back'
+            duration: 300,
+            //repeat: -1, // -1: infinity
+            //yoyo: true
+        });
 
 
         // chargement de la map
@@ -85,19 +84,35 @@ class Tableau1 extends Phaser.Scene {
             tileset
         );
 
+        platforms.setCollisionByExclusion(-1, true);
+
         // Création du personnage de base
-        this.player = this.physics.add.sprite(150, 200, 'player').setOrigin(0, 0);
+        this.player = this.physics.add.sprite(150, 200, 'player1').setOrigin(0, 0);
         this.player.setDisplaySize(64, 64);
         this.player.body.setAllowGravity(true);
         this.player.setVisible(true);
         this.player.setVelocityY(0);
+        this.player.scale = 0.6
 
-        platforms.setCollisionByExclusion(-1, true);
+        this.anims.create({
+            key: 'player',
+            //frames: this.getFrames('player', 5),
+            frames: [
+                {key:'player1'},
+                {key:'player2'},
+                {key:'player3'},
+                {key:'player4'},
+                {key:'player5'},
+            ],
+            frameRate: 5,
+            repeat: -1,
+        });
+        this.player.play('player');
+
+
 
 
         // Creation des collision
-
-
         this.physics.add.collider(this.player, platforms);
         // this.physics.add.collider(this.platfer, platforms);
 
@@ -120,55 +135,6 @@ class Tableau1 extends Phaser.Scene {
     }
 
 
-    dashR(){
-        this.dDown = false;
-
-
-        if(this.dDown && this.shiftDown) {
-            if (this.lockDash === 0) {
-                this.lockDash = 1
-                let me = this;
-                this.tween = this.scene.tweens.add({
-                    targets: this,
-                    d: '+=10',
-                    ease: 'Circ.easeInOut',
-                    duration: 250,
-                    onComplete: function () {
-                        me.d = 1
-                        me.shiftDown = false;
-                        me.lockDash = 0
-                    }
-                });
-            }
-        }
-        console.log('dash');
-    }
-
-
-
-    dashL() {
-        this.qDown = false;
-
-        if (this.qDown && this.shiftDown) {
-            if (this.lockDash === 0) {
-                this.lockDash = 1
-                let me = this;
-                this.tween = this.scene.tweens.add({
-                    targets: this,
-                    d: '+=10',
-                    ease: 'Circ.easeInOut',
-                    duration: 250,
-                    onComplete: function () {
-                        me.d = 1
-                        me.shiftDown = false;
-                        me.lockDash = 0
-                    }
-                });
-            }
-            console.log('dash');
-        }
-    }
-
     initKeyboard() {
         let me = this;
 
@@ -177,22 +143,18 @@ class Tableau1 extends Phaser.Scene {
 
                 case Phaser.Input.Keyboard.KeyCodes.Q:
 
-                    me.qDown = false
+                    me.leftDown = false
                     me.player.setVelocityX(0);
 
                     break;
 
                 case Phaser.Input.Keyboard.KeyCodes.D:
-                    me.dDown = false;
+                    me.rightDown = false;
                     me.player.setVelocityX(0);
 
                     break;
 
-                case Phaser.Input.Keyboard.KeyCodes.D:
 
-                    me.player.setVelocityX(0);
-
-                    break;
                 case Phaser.Input.Keyboard.KeyCodes.SHIFT:
                     me.shiftDown = false;
                     break;
@@ -203,16 +165,16 @@ class Tableau1 extends Phaser.Scene {
 
                 case Phaser.Input.Keyboard.KeyCodes.Q:
 
-                    me.qDown = true
-                    me.player.setVelocityX(-300);
+                    me.player.setVelocityX(-200);
+                    me.leftDown=true;
+                    me.gauche = true;
 
-                        me.turn = true;
 
                     break;
 
                 case Phaser.Input.Keyboard.KeyCodes.D:
 
-                        me.dDown = true;
+                        me.rightDown = true
                         me.player.setVelocityX(300);
 
                         me.turn = false;
@@ -224,35 +186,62 @@ class Tableau1 extends Phaser.Scene {
                     if (me.player.body.onFloor()){
                         me.player.setVelocityY(-550);
                     }
-
-
-
                     break;
-
-                case Phaser.Input.Keyboard.KeyCodes.E:
-
-
-                        break;
-
-                        // une action qui pose l'arme que on as en main.
 
                 case Phaser.Input.Keyboard.KeyCodes.SHIFT:
                     me.shiftDown = true;
                     break;
+
+
             }
         })
     }
 
     update(){
-        this.sword.x = this.player.x+110;
-        this.sword.y = this.player.y+30;
+
         this.player.flipX = this.turn === true;
-        this.sword.flipX = this.turn === true;
-        this.dashR()
-        this.dashL()
-        if (this.turn === true){
-            this.sword.X +50;
+
+
+
+
+
+
+
+        if (this.shiftDown && this.rightDown) {
+            if (this.flag) {
+
+            } else {
+                this.dash.play();
+                this.flag = true;
+            }
+            this.player.setVelocityX(1000 * this.speed.speedDash);
+            console.log(this.speed.speedDash);
         }
+
+        if (this.shiftDown && this.leftDown) {
+            if (this.flag) {
+
+            } else {
+                this.dash.play();
+                this.flag = true;
+            }
+            this.player.setVelocityX(-1000 * this.speed.speedDash);
+            console.log(this.speed.speedDash);
+        }
+
+        if (!this.shiftDown) {
+            if (this.flag) {
+                this.flag = false;
+            }
+        }
+
+        if (!this.shiftDown && this.rightDown) {
+            this.player.setVelocityX(200);
+        } else if (!this.shiftDown && this.leftDown) {
+            this.player.flipX = true;
+            this.player.setVelocityX(-200);
+        }
+
 
 
 

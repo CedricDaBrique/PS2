@@ -2,7 +2,7 @@ let gameConfig = {
     type: Phaser.AUTO,
     width: 800,
     height: 900,
-    backgroundColor: '#ffffff',
+    backgroundColor: '#58001F',
     parent: 'game',
     physics: {
         default: 'arcade',
