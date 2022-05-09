@@ -3,10 +3,8 @@ class Tableau1 extends Phaser.Scene {
 
     preload() {
 
-        this.load.image('player','assets/Robot.png');
+        this.load.image('player', 'assets/Robot.png');
         this.load.image("sword", "assets/images/sword.png");
-
-
 
 
         this.load.image("tilemap", "assets/tiles_packed.png");
@@ -16,8 +14,7 @@ class Tableau1 extends Phaser.Scene {
     }
 
 
-    onEvent()
-    {
+    onEvent() {
         this.sword.disableBody()
         this.sword.setVisible(false);
     }
@@ -27,7 +24,17 @@ class Tableau1 extends Phaser.Scene {
         this.turn = false;
 
 
+        this.largeurniveau = 8064;
+        this.hauteurniveau = 8064;
+        this.largeurcamera = 1200;
+        this.hauteurcamera = 640;
 
+
+        this.cursors = this.input.keyboard.createCursorKeys();
+
+        //CAMERA
+        this.zoom = 1.5;
+        this.cameras.main.setZoom(this.zoom);
 
 
         //SWORD
@@ -39,6 +46,7 @@ class Tableau1 extends Phaser.Scene {
         this.sword.attack = 100
         this.sword.disableBody()
 
+
         this.input.on('pointerdown', function (pointer) {
 
             //On rend l'épée visible
@@ -46,14 +54,9 @@ class Tableau1 extends Phaser.Scene {
             //On active le body de l'épée
             this.sword.enableBody()
             //On ajoute un event avec un delay qui fera disparaitre l'épée pendant 250 ms
-            this.time.addEvent({ delay: 250, callback: this.onEvent, callbackScope: this });
+            this.time.addEvent({delay: 250, callback: this.onEvent, callbackScope: this});
 
         }, this);
-
-
-
-
-
 
 
         // chargement de la map
@@ -76,7 +79,7 @@ class Tableau1 extends Phaser.Scene {
             tileset
         );
 
-// chargement du calque décors
+        // chargement du calque décors
         const platfer = map.createLayer(
             "calque_decor",
             tileset
@@ -84,7 +87,7 @@ class Tableau1 extends Phaser.Scene {
 
         // Création du personnage de base
         this.player = this.physics.add.sprite(150, 200, 'player').setOrigin(0, 0);
-        this.player.setDisplaySize( 64, 64);
+        this.player.setDisplaySize(64, 64);
         this.player.body.setAllowGravity(true);
         this.player.setVisible(true);
         this.player.setVelocityY(0);
@@ -102,24 +105,69 @@ class Tableau1 extends Phaser.Scene {
         this.cameras.main.startFollow(this.player);
 
 
-
-
-
-
         this.initKeyboard();
     }
 
     // fonction pour faire regarder s'il y a un overlaps donc deux objets qui se touche pour l'utilisé plus facilement.
 
-    checkCollider(Objet1x,Objet1y,Object1TailleLargeur,Object1TailleHauteur,Objet2x,Objet2y,Objet2TaileLargeur,Objet2TailleHauteur){
+    checkCollider(Objet1x, Objet1y, Object1TailleLargeur, Object1TailleHauteur, Objet2x, Objet2y, Objet2TaileLargeur, Objet2TailleHauteur) {
         if (Objet1x + Object1TailleLargeur > Objet2x && Objet1x < Objet2x + Objet2TaileLargeur
-                                            &&
+            &&
             Objet1y + Object1TailleHauteur > Objet2y && Objet1y < Objet2y + Objet2TailleHauteur) {
             // Si toutes les conditons sont vrais alors il y a bien un overlaps, on renvoie donc true/vrai a notre foncion sinon on ne renvoie rien
             return true
         }
     }
 
+
+    dashR(){
+        this.dDown = false;
+
+
+        if(this.dDown && this.shiftDown) {
+            if (this.lockDash === 0) {
+                this.lockDash = 1
+                let me = this;
+                this.tween = this.scene.tweens.add({
+                    targets: this,
+                    d: '+=10',
+                    ease: 'Circ.easeInOut',
+                    duration: 250,
+                    onComplete: function () {
+                        me.d = 1
+                        me.shiftDown = false;
+                        me.lockDash = 0
+                    }
+                });
+            }
+        }
+        console.log('dash');
+    }
+
+
+
+    dashL() {
+        this.qDown = false;
+
+        if (this.qDown && this.shiftDown) {
+            if (this.lockDash === 0) {
+                this.lockDash = 1
+                let me = this;
+                this.tween = this.scene.tweens.add({
+                    targets: this,
+                    d: '+=10',
+                    ease: 'Circ.easeInOut',
+                    duration: 250,
+                    onComplete: function () {
+                        me.d = 1
+                        me.shiftDown = false;
+                        me.lockDash = 0
+                    }
+                });
+            }
+            console.log('dash');
+        }
+    }
 
     initKeyboard() {
         let me = this;
@@ -129,6 +177,13 @@ class Tableau1 extends Phaser.Scene {
 
                 case Phaser.Input.Keyboard.KeyCodes.Q:
 
+                    me.qDown = false
+                    me.player.setVelocityX(0);
+
+                    break;
+
+                case Phaser.Input.Keyboard.KeyCodes.D:
+                    me.dDown = false;
                     me.player.setVelocityX(0);
 
                     break;
@@ -137,6 +192,9 @@ class Tableau1 extends Phaser.Scene {
 
                     me.player.setVelocityX(0);
 
+                    break;
+                case Phaser.Input.Keyboard.KeyCodes.SHIFT:
+                    me.shiftDown = false;
                     break;
             }
         })
@@ -145,8 +203,8 @@ class Tableau1 extends Phaser.Scene {
 
                 case Phaser.Input.Keyboard.KeyCodes.Q:
 
-
-                        me.player.setVelocityX(-300);
+                    me.qDown = true
+                    me.player.setVelocityX(-300);
 
                         me.turn = true;
 
@@ -154,6 +212,7 @@ class Tableau1 extends Phaser.Scene {
 
                 case Phaser.Input.Keyboard.KeyCodes.D:
 
+                        me.dDown = true;
                         me.player.setVelocityX(300);
 
                         me.turn = false;
@@ -163,7 +222,7 @@ class Tableau1 extends Phaser.Scene {
                 case Phaser.Input.Keyboard.KeyCodes.SPACE:
 
                     if (me.player.body.onFloor()){
-                        me.player.setVelocityY(-650);
+                        me.player.setVelocityY(-550);
                     }
 
 
@@ -177,8 +236,8 @@ class Tableau1 extends Phaser.Scene {
 
                         // une action qui pose l'arme que on as en main.
 
-                case Phaser.Input.Keyboard.KeyCodes.A:
-
+                case Phaser.Input.Keyboard.KeyCodes.SHIFT:
+                    me.shiftDown = true;
                     break;
             }
         })
@@ -189,9 +248,18 @@ class Tableau1 extends Phaser.Scene {
         this.sword.y = this.player.y+30;
         this.player.flipX = this.turn === true;
         this.sword.flipX = this.turn === true;
+        this.dashR()
+        this.dashL()
         if (this.turn === true){
             this.sword.X +50;
         }
+
+
+
+
+
+
+
 
 
     }
