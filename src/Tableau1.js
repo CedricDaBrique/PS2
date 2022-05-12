@@ -48,13 +48,12 @@ class Tableau1 extends Phaser.Scene {
         this.dash = this.tweens.add({
             targets: this.speed,
             speedDash: 0,
-            // alpha: { start: 0, to: 1 },
-            // alpha: 1,
-            // alpha: '+=1',
             ease: "Circ.easeInOut", // 'Cubic', 'Elastic', 'Bounce', 'Back'
             duration: 300,
-            //repeat: -1, // -1: infinity
-            //yoyo: true
+            //onUpdate : function (){
+                //this.player.setVelocityX(900 * this.speedDash);
+            //}
+
         });
 
 
@@ -93,6 +92,7 @@ class Tableau1 extends Phaser.Scene {
         this.player.setVisible(true);
         this.player.setVelocityY(0);
         this.player.scale = 0.6
+
 
         this.anims.create({
             key: 'player',
@@ -199,6 +199,7 @@ class Tableau1 extends Phaser.Scene {
 
     update(){
 
+
         this.player.flipX = this.turn === true;
 
 
@@ -214,7 +215,7 @@ class Tableau1 extends Phaser.Scene {
                 this.dash.play();
                 this.flag = true;
             }
-            this.player.setVelocityX(1000 * this.speed.speedDash);
+            this.player.setVelocityX(800 * this.speed.speedDash);
             console.log(this.speed.speedDash);
         }
 
@@ -225,7 +226,7 @@ class Tableau1 extends Phaser.Scene {
                 this.dash.play();
                 this.flag = true;
             }
-            this.player.setVelocityX(-1000 * this.speed.speedDash);
+            this.player.setVelocityX(-800 * this.speed.speedDash);
             console.log(this.speed.speedDash);
         }
 
